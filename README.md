@@ -141,12 +141,7 @@ Hasilnya `main.pdf`. Diperlukan distribusi TeX dengan paket `babel` (bahasa Indo
 
 Catatan keterbatasan lengkap beserta saran pengembangan ada di notebook (bagian 13) dan di laporan (bagian Kesimpulan dan Keterbatasan).
 
-## 7. Sebelum dikumpulkan
-
-- [ ] Isi tautan Colab pada halaman pertama laporan (masih berupa tempat kosong) dan pada tabel di atas.
-- [ ] Cantumkan NIM pada bagian penulis laporan bila diperlukan.
-
-## 8. Rujukan
+## 7. Rujukan
 
 - J. Redmon, S. Divvala, R. Girshick, dan A. Farhadi, "You Only Look Once: Unified, Real-Time Object Detection," *CVPR*, 2016.
 - D. Du dkk., "VisDrone-DET2019: The Vision Meets Drone Object Detection in Image Challenge Results," *ICCVW*, 2019.
