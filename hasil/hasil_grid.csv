@@ -1,0 +1,7 @@
+S,Keterangan,Sel,Objek diretensi (%),Kehilangan (%)
+7,YOLOv1 (paper),49,26.0,74.0
+13,stride 32 @ ~416,169,45.0,55.0
+20,stride 32 @ 640,400,59.7,40.3
+40,stride 16 @ 640,1600,79.6,20.4
+80,stride 8 @ 640,6400,92.2,7.8
+160,stride 8 @ 1280,25600,98.0,2.0

@@ -1,0 +1,18 @@
+\begin{table}[t]
+\caption{mAP sadar kelas (10 kelas VisDrone) model YOLO11n \textit{fine-tuned}.}
+\label{tab:map10}
+\centering\scriptsize
+\begin{tabular}{lccccc}
+\toprule
+ & \multicolumn{4}{c}{mAP@0,5} & mAP@0,5:0,95 \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-6}
+Konfigurasi & K & S & B & A & A \\
+\midrule
+640 & 0,072 & 0,212 & 0,293 & 0,132 & 0,075 \\
+960 & 0,112 & 0,244 & 0,267 & 0,168 & 0,096 \\
+1280 & 0,135 & 0,244 & 0,200 & 0,176 & 0,099 \\
+\textit{tiling} & 0,137 & 0,229 & 0,157 & 0,169 & 0,091 \\
+\textit{\textit{tiling}}+penuh & 0,132 & 0,240 & 0,242 & 0,171 & 0,093 \\
+\bottomrule
+\end{tabular}
+\end{table}

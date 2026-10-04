@@ -1,0 +1,14 @@
+Model,Konfigurasi,AP50 kecil | jarang,AP50 kecil | sedang,AP50 kecil | padat
+YOLO11n zero-shot,640,0.209,0.181,0.164
+YOLO11n zero-shot,960,0.34,0.3,0.279
+YOLO11n zero-shot,1280,0.407,0.374,0.353
+YOLO11n zero-shot,tiling,0.364,0.343,0.342
+YOLO11n zero-shot,tiling+penuh,0.36,0.34,0.337
+YOLO11s zero-shot,640,0.312,0.27,0.243
+YOLO11s zero-shot,1280,0.509,0.466,0.437
+YOLO11s zero-shot,tiling,0.452,0.414,0.411
+YOLO11n fine-tuned,640,0.338,0.315,0.27
+YOLO11n fine-tuned,960,0.452,0.436,0.398
+YOLO11n fine-tuned,1280,0.496,0.479,0.462
+YOLO11n fine-tuned,tiling,0.467,0.46,0.462
+YOLO11n fine-tuned,tiling+penuh,0.469,0.451,0.447

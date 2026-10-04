@@ -1,0 +1,41 @@
+\section{Pendahuluan}
+YOLO merumuskan deteksi objek sebagai satu regresi dari citra ke tensor $S\times S\times(5B+C)$, sehingga satu lintasan jaringan cukup untuk memprediksi seluruh objek pada citra \cite{redmon2016}. Pada Bagian 2.4, Redmon dkk. mengakui tiga keterbatasan. Pertama, setiap sel grid hanya memprediksi dua kotak dan satu kelas, sehingga jumlah objek berdekatan yang dapat diprediksi terbatas dan objek kecil yang muncul berkelompok sulit dideteksi. Kedua, fitur yang dipakai untuk memprediksi kotak tergolong kasar akibat banyaknya \textit{downsampling}. Ketiga, fungsi \textit{loss} memperlakukan galat pada kotak kecil sama dengan galat pada kotak besar.
+
+YOLO modern telah mengubah banyak komponen tersebut. YOLO11 \cite{jocher2024} memakai \textit{neck} piramida fitur multiskala \cite{lin2017fpn}, kepala deteksi tanpa \textit{anchor}, penetapan target selaras tugas \cite{feng2021tood}, dan \textit{distribution focal loss} \cite{li2020gfl}. Pertanyaan yang muncul adalah apakah keterbatasan pada objek kecil yang berkelompok masih berlaku pada YOLO modern.
+
+VisDrone-DET \cite{du2019visdrone} menjadi himpunan data uji yang sesuai karena memuat citra drone dengan objek yang sangat kecil dan padat. Pada set \textit{val}, 68,6\% objek berukuran kecil (luas kurang dari $32^2$ piksel), median kepadatan mencapai 65 objek per citra, dan 65,5\% citra memuat lebih dari 49 objek, yaitu kapasitas maksimum grid $7\times7$ pada YOLOv1.
+
+Penelitian ini menjawab tiga pertanyaan riset yang dapat diuji secara empiris.
+\begin{enumerate}
+\item \textbf{RQ1.} Berapa fraksi objek VisDrone yang kehilangan sel penanggung jawab pada formulasi YOLOv1, dan bagaimana fraksi itu berubah pada grid yang lebih rapat?
+\item \textbf{RQ2.} Apakah YOLO11 masih lebih lemah pada objek kecil dan pada citra yang padat, bila diukur dengan AP@0,5 dan AP@0,5:0,95 menurut ukuran objek?
+\item \textbf{RQ3.} Apakah menaikkan resolusi masukan atau mengiris citra (\textit{tiling}) mengecilkan kesenjangan tersebut?
+\end{enumerate}
+
+\section{Metode}
+\subsection{Ringkasan YOLOv1 dan klaim yang diuji}
+YOLOv1 membagi citra menjadi grid $S\times S$ dengan $S=7$. Sel yang memuat pusat objek bertanggung jawab memprediksi objek itu. Bila $(c_x,c_y)$ adalah pusat kotak yang dinormalisasi terhadap citra, sel penanggung jawab berada pada baris $i$ dan kolom $j$ dengan
+\begin{equation}
+j=\lfloor c_x S\rfloor,\quad i=\lfloor c_y S\rfloor,\quad x=c_x S-j,\quad y=c_y S-i,
+\label{eq:target}
+\end{equation}
+sedangkan $w$ dan $h$ dinormalisasi terhadap citra. Setiap sel memprediksi $B=2$ kotak $(x,y,w,h,\text{kepercayaan})$ dan satu himpunan probabilitas kelas $C$, sehingga satu sel hanya dapat membawa satu objek. Fungsi \textit{loss} menggunakan $\sqrt{w}$ dan $\sqrt{h}$ untuk meredam perbedaan galat antara kotak kecil dan besar, tetapi paper mengakui bahwa pendekatan ini hanya mengurangi masalahnya.
+
+\subsection{Bagian yang diimplementasikan}
+Implementasi mencakup empat komponen yang dikerjakan sendiri. Pertama, fungsi \texttt{encode\_yolov1\_target} menerapkan Persamaan~\eqref{eq:target} dan menghitung objek yang kehilangan sel (RQ1). Kedua, evaluator AP gaya COCO memakai antarmuka \texttt{pycocotools} (dengan implementasi \texttt{faster-coco-eval} bila tersedia) dengan rincian ukuran dan kepadatan serta wilayah abaikan VisDrone. Ketiga, fungsi inferensi mencakup resolusi masukan dan \textit{tiling} beserta penggabungan NMS (RQ3). Keempat, analisis sensitivitas IoU dan resolusi efektif menguji klaim tentang galat kotak kecil. Detektor YOLO11 dipakai melalui pustaka Ultralytics dan tidak ditulis ulang dari awal.
+
+\subsection{Perbedaan dengan paper dan alasannya}
+Penelitian ini tidak melatih ulang YOLOv1 karena tujuan yang diuji adalah apakah keterbatasannya masih berlaku pada detektor modern. Analisis struktural YOLOv1 dilakukan lewat penetapan target tanpa melatih jaringan, sehingga hasilnya berupa batas atas recall dan bukan performa terukur. YOLO11 menetapkan target secara banyak-ke-satu pada tiga skala (stride 8, 16, dan 32), sehingga batas satu objek per sel tidak berlaku. Karena itu hasil RQ1 untuk $S>7$ menunjukkan seberapa ketat batas tersebut bila diterapkan pada grid rapat, dan tidak menggambarkan YOLO11. Paper melaporkan mAP pada PASCAL VOC, sedangkan penelitian ini memakai VisDrone-DET, sehingga angka mutlaknya tidak sebanding.
+
+\section{Setup Eksperimen}
+\subsection{Data}
+Himpunan data adalah VisDrone-DET 2019 \cite{du2019visdrone} dengan sepuluh kelas (\textit{pedestrian, people, bicycle, car, van, truck, tricycle, awning-tricycle, bus, motor}). Set uji adalah seluruh \textit{val} (548 citra, 38.759 objek). Pelatihan memakai subset \textit{train} yang dipilih acak dengan seed 42, yaitu 1.000 citra untuk pelatihan dan 50 citra \textit{hold-out} untuk pemilihan \textit{checkpoint}, sehingga set uji tidak disentuh selama pelatihan. Anotasi berskor 0 (wilayah diabaikan dan kategori \textit{others}) diperlakukan sebagai wilayah abaikan.
+
+\subsection{Model dan intervensi}
+Tiga model dibandingkan, yaitu YOLO11n pralatih COCO (\textit{zero-shot}), YOLO11s pralatih COCO sebagai pembanding kapasitas, dan YOLO11n hasil \textit{fine-tuning} pada subset VisDrone. Model \textit{zero-shot} hanya memakai kelas COCO yang berpadanan (\textit{person, bicycle, car, motorcycle, bus, truck}). Lima konfigurasi inferensi diuji: masukan 640, 960, dan 1280 piksel, \textit{tiling} (irisan $640\times640$ dengan tumpang tindih 20\% pada resolusi asli, digabung NMS IoU 0,5), dan \textit{tiling} ditambah satu inferensi citra penuh. Teknik \textit{tiling} ini disederhanakan dari SAHI \cite{akyon2022sahi}. Pada seluruh konfigurasi, ambang kepercayaan 0,001, NMS agnostik kelas dengan IoU 0,7, dan maksimum 500 deteksi digunakan.
+
+\subsection{Metrik}
+Metrik utama adalah AP@0,5 dan AP@0,5:0,95 gaya COCO \cite{lin2014coco} yang dirinci menurut ukuran objek: kecil ($<32^2$ piksel), sedang ($32^2$ sampai $96^2$), dan besar ($>96^2$) pada resolusi asli. Batas deteksi per citra dinaikkan dari 100 menjadi 500, karena citra \textit{val} memuat hingga 317 objek. Mode agnostik kelas dipakai agar model \textit{zero-shot} dan \textit{fine-tuned} dapat dibandingkan, dan mAP sadar kelas (10 kelas) dilaporkan khusus bagi model \textit{fine-tuned}. Pengujian mandiri evaluator (GT sebagai deteksi) menghasilkan AP mendekati 1. Kepadatan citra dibagi menjadi tiga kelompok berdasarkan tersil jumlah objek per citra.
+
+\subsection{Komputasi}
+Seluruh eksperimen berjalan di Google Colab dengan GPU NVIDIA Tesla T4 dan 2 inti CPU, memakai Python 3.13.15, PyTorch 2.11.0+cu130, dan Ultralytics 8.4.172. Seed acak adalah 42. Notebook dapat dijalankan ulang di Google Colab dari awal sampai akhir.

@@ -1,0 +1,3 @@
+Himpunan,Citra,Objek valid,Median objek/citra,Maks objek/citra,Citra > 49 objek (%),Small (%),Medium (%),Large (%)
+VisDrone-DET val (uji),548,38759,65.0,317,65.5,68.6,28.7,2.8
+Subset train (latih),1000,52027,41.5,351,41.2,60.1,34.2,5.7

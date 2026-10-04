@@ -1,0 +1,17 @@
+\begin{table}[t]
+\caption{AP@0,5 objek kecil menurut kepadatan citra (tersil jumlah objek per citra).}
+\label{tab:kepadatan}
+\centering\scriptsize
+\begin{tabular}{llccc}
+\toprule
+Model & Konfigurasi & Jarang & Sedang & Padat \\
+\midrule
+YOLO11n \textit{zero-shot} & 640 & 0,209 & 0,181 & 0,164 \\
+YOLO11n \textit{zero-shot} & \textit{tiling} & 0,364 & 0,343 & 0,342 \\
+YOLO11s \textit{zero-shot} & 640 & 0,312 & 0,270 & 0,243 \\
+YOLO11s \textit{zero-shot} & \textit{tiling} & 0,452 & 0,414 & 0,411 \\
+YOLO11n \textit{fine-tuned} & 640 & 0,338 & 0,315 & 0,270 \\
+YOLO11n \textit{fine-tuned} & \textit{tiling} & 0,467 & 0,460 & 0,462 \\
+\bottomrule
+\end{tabular}
+\end{table}
