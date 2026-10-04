@@ -9,7 +9,7 @@ Opsi C: YOLO dan VisDrone-DET.
 | Paper yang diuji | Redmon dkk. (2016), *You Only Look Once: Unified, Real-Time Object Detection*, Bagian 2.4 (keterbatasan YOLO) |
 | Dataset | VisDrone-DET 2019 (10 kategori objek, citra dari drone) |
 | Model | YOLO11n *zero-shot*, YOLO11s *zero-shot*, YOLO11n *fine-tuned* |
-| Tautan Colab | *(isi tautan notebook Colab di sini)* |
+| Tautan Colab | *(https://drive.google.com/file/d/1wVPXD3opS62941b6djKesyzahrbxxBJk/view?usp=sharing)* |
 
 ---
 
